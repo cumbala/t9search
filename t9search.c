@@ -55,15 +55,16 @@ int main(int argc, char **argv) {
     /// Actual array length
     int len = 0;
     /// Buffer size for @p getline()
-    size_t buf_size = BUF_SIZE;
+    //size_t buf_size = BUF_SIZE;
     
     /// Temp buffers
-    char *t_name, *t_num;
+    char t_name[BUF_SIZE], t_num[BUF_SIZE];
     
     /// Read stdin line by line, until we get an empty line
-    while (getline(&t_name, &buf_size, stdin) > 0) {
-        getline(&t_num, &buf_size, stdin);
-
+//    while (getline(&t_name, &buf_size, stdin) > 0) {
+//        getline(&t_num, &buf_size, stdin);
+    while (fgets(t_name, sizeof(t_name), stdin) != NULL) {
+        fgets(t_num, sizeof(t_num), stdin);
         /// Since we are reading to a string buffer, we need to convert number to int type
         ///
         /// @remarks Yes, @p atoi() is unsafe, but whatever
