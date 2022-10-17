@@ -8,7 +8,7 @@ all:
 	$(COMPILER) -std=c99 -Wall -Wextra -Werror $(TARGET).c -o $(TARGET)
 
 run:
-	$(COMPILE) && ./$(TARGET) < telbook.txt
+	$(COMPILE) && ./$(TARGET) < seznam.txt
 
 run-search:
-	$(COMPILE) && ./$(TARGET) 264 < telbook.txt
+	$(COMPILE) && ./$(TARGET) 264 < seznam.txt
