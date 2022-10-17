@@ -9,7 +9,6 @@
 /// @endcode
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 /// Global string buffer size
@@ -31,14 +30,6 @@ char KB[10][5] = {
     "tuv",
     "wxyz"
 };
-
-/// Prints @c msg to @c stderr and exits with @c EXIT_FAILURE
-/// @param err_type Type of error (just a string for clarity)
-/// @param msg Error message
-void Error(char *err_type, char *msg) {
-    fprintf(stderr, "ERROR (%s): %s\n", err_type, msg);
-    exit(EXIT_FAILURE);
-}
 
 /// Converts normal string format to lowercase
 /// @param str String to convert
@@ -112,7 +103,7 @@ int main(int argc, char **argv) {
 
         /// Check if t_num is actually a number after cleaning
         /// line breaks from it
-        /// If it's not a number - skip this contact
+        /// If it's not a number - skip this contact\n
         ///
         /// For now, we will only allow
         /// any ASCII character in the name...
