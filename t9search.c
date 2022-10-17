@@ -3,7 +3,7 @@
 ///
 /// Author: Konstantin Romanets, xroman18@stud.fit.vut.cz
 /// Date:   10.10.2022
-/// Desc:   Implementation of T9 search contacts algorithm for IZP course
+/// Desc:   Implementation of T9 contacts search algorithm for IZP course
 ///
 /// VUT FIT 2022
 /// @endcode
