@@ -19,8 +19,6 @@
 
 /// To keep track of search
 static int found = -1;
-/// @c -l argument
-static int levenshtein = -1;
 
 /// Keyboard, lol
 char KB[10][5] = {
