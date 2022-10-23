@@ -1,10 +1,10 @@
 /// @code
-/// t9search.c
+/// t9search_levenshtein.c
 ///
 /// Author: Konstantin Romanets, xroman18@stud.fit.vut.cz
 /// Date:   10.10.2022
 /// Desc:   Implementation of T9 contacts search algorithm for IZP course
-///         without recursion
+///         without recursion with Levenshtein distance fuzzy search
 ///
 /// VUT FIT 2022
 /// @endcode
@@ -35,6 +35,48 @@ char KB[10][5] = {
     "tuv",
     "wxyz"
 };
+
+int Min(int count, ...) {
+    va_list args;
+    int min = 9999999;
+
+    va_start(args, count);
+    
+    for (int i = 0; i < count; i++) {
+        int val = va_arg(args, int);
+        if (val < min) {
+            min = val;
+        }
+    }
+
+    va_end(args);
+    
+    return min;
+}
+
+/// Compute Levenshtein distance between two strings
+/// @param a First string
+/// @param b Second string
+/// @return A difference distance between two strings
+int LevenshteinDistance(char *a, char *b) {
+    int m = (int)strlen(a), n = (int)strlen(b), cost, distance;
+    int d[(m + 1) * (n + 1)];
+    for (int k = 0; k <= m; k++)
+        d[k * (n + 1)] = k;
+
+    for (int l = 0; l <= n; l++)
+        d[l] = l;
+
+    for (int i = 1; i <= m; i++)
+        for (int j = 1; j <= n; j++) {
+            cost = (a[i - 1] == b[j - 1]) ? 0 : 1;
+            d[i * (n + 1) + j] = Min(3, d[(i - 1) * (n + 1) + j] + 1, d[i * (n + 1) + j - 1] + 1, d[(i - 1) * (n + 1) + j - 1] + cost);
+        }
+
+    distance = d[m * (n + 1) + n];
+
+    return distance;
+}
 
 /// Converts normal string format to lowercase
 /// @param str String to convert
@@ -74,9 +116,9 @@ void CheckNormal(char *search, char *query) {
             }
         }
     }
-
+    
     /// Compare query to the sequence of numbers
-    if (strstr(numbers, query) != NULL) {
+    if (strstr(numbers, query) != NULL || (levenshtein != -1 && LevenshteinDistance(numbers, query) <= levenshtein)) {
         found = 0;
     }
 }
@@ -114,13 +156,19 @@ int main(int argc, char **argv) {
             /// No args - print the formatted contact
             printf("%s, %s\n", t_name, t_num);
         } else {
+            /// Check if -l argument is set
+            if (strcmp(argv[1], "-l") == 0) {
+                /// Check if -l argument is set and has a value
+                levenshtein = (int)strtol(argv[2], (char **)NULL, 10);
+            }
+            
             /// Convert name to lowercase for search
             char l_name[BUF_SIZE];
             strcpy(l_name, t_name);
             ToLower((unsigned char *)l_name);
             
-            CheckNormal(l_name, argv[1]);
-            if (found == 0 || strstr(t_num, argv[1]) != NULL) {
+            CheckNormal(l_name, argv[levenshtein == -1 ? 1 : 3]);
+            if (found == 0 || strstr(t_num, argv[levenshtein == -1 ? 1 : 3]) != NULL) {
                 found_count++;
                 printf("%s, %s\n", t_name, t_num);
             }

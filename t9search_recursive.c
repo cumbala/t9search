@@ -1,17 +1,15 @@
 /// @code
-/// t9search.c
+/// t9search_recursive.c
 ///
 /// Author: Konstantin Romanets, xroman18@stud.fit.vut.cz
 /// Date:   10.10.2022
 /// Desc:   Implementation of T9 contacts search algorithm for IZP course
-///         without recursion
+///         Uses recursion as it's base
 ///
 /// VUT FIT 2022
 /// @endcode
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
 #include <string.h>
 
 /// Global string buffer size
@@ -19,8 +17,6 @@
 
 /// To keep track of search
 static int found = -1;
-/// @c -l argument
-static int levenshtein = -1;
 
 /// Keyboard, lol
 char KB[10][5] = {
@@ -43,8 +39,53 @@ char KB[10][5] = {
 /// "implementation-dependent" char to int conversion, but...
 /// wtf, there are symbols BEYOND 0???
 void ToLower(unsigned char *str) {
-    for(unsigned char *p = str; *p; ++p)
-        *p = *p >= 'A' && *p <= 'Z' ? *p | 0x60 : *p;
+    for(unsigned char *p = str; *p; ++p) *p = *p >= 'A' && *p <= 'Z' ? *p | 0x60 : *p;
+}
+
+/// Recursive function to iterate over all variants of input numbers on a keypad
+/// If a match is found, sets global @c found flag to 0
+/// @param search A name in contacts to search for (case-sensitive!)
+/// @param number Input numbers on keypad in array form (easier to iterate over)
+/// @param current_digit Current digit that is being checked (recursive limiter)
+/// @param output Recursive output collector - a modifiable string
+/// @param len Max length of @c output
+/// @remarks
+/// Should not cause a problem with stack overflow :kekw:
+void Check(char* search, int number[], int current_digit, char output[], int len) {
+    if (current_digit == len) {
+        /// Output here is a proper combination
+        /// Here we pop out of this recursion hell
+        if (strstr(search, output) != NULL) {
+            found = 0;
+        }
+
+        return;
+    }
+
+    /// Iterate over all possible letters for current digit
+    for (int i = 0; i < (int)strlen(KB[number[current_digit]]); i++) {
+        output[current_digit] = KB[number[current_digit]][i];
+        /// Go to next digit
+        Check(search, number, current_digit + 1, output, len);
+        /// If we found a match, we don't need to check any more
+        if (number[current_digit] == 0 || number[current_digit] == 1) return;
+    }
+}
+
+/// Caller function for @c Check
+/// @param search A name in contacts to search for (case-sensitive!)
+/// @param number Input numbers on keypad in array form (easier to iterate over)
+/// @param len Length of @c number
+/// @remarks
+/// Resets @c found flag
+void CheckRecursive(char *search, int number[], int len) {
+    /// Reset flag
+    found = -1;
+    /// Allocate array
+    char result[len + 1];
+    result[len] = '\0';
+    /// Call the Spaghetti monster
+    Check(search, number, 0, result, len);
 }
 
 /// A proper way to search for a match
@@ -57,24 +98,17 @@ void CheckNormal(char *search, char *query) {
 
     int len = (int) strlen(search);
     char numbers[len + 1];
-    numbers[len] = '\0';
     
     /// Convert search into a sequence of numbers
     for (int i = 0; i < len; i++) {
         for (int j = 0; j < 10; j++) {
-            /// Check if there is any symbols in the search and replace them with space
-            if (strchr(" .,:;!?-*&^%$#@()+=_{}[]'\"<>/|\\", search[i]) != NULL) {
-                numbers[i] = ' ';
-                break;
-            }
-            /// But the letters should be replaced with numbers from keyboard
             if (strchr(KB[j], search[i]) != NULL) {
                 numbers[i] = j + '0';
                 break;
             }
         }
     }
-
+    
     /// Compare query to the sequence of numbers
     if (strstr(numbers, query) != NULL) {
         found = 0;
@@ -88,7 +122,7 @@ int main(int argc, char **argv) {
 
     /// Counter for "not found" message
     int found_count = 0;
-    
+
     /// Read name in t_name unless newline or EOF
     while (fgets(t_name, sizeof(t_name), stdin) != NULL) {
         /// Read number in t_num
@@ -118,7 +152,16 @@ int main(int argc, char **argv) {
             char l_name[BUF_SIZE];
             strcpy(l_name, t_name);
             ToLower((unsigned char *)l_name);
-            
+
+//            /// Convert string search argument to int array
+//            int len = (int)strlen(argv[1]);
+//            int number[len];
+//
+//            for (int i = 0; i < len; i++)
+//                number[i] = argv[1][i] - '0';
+//
+//            /// Do the magic
+//            CheckRecursive(l_name, number, len);
             CheckNormal(l_name, argv[1]);
             if (found == 0 || strstr(t_num, argv[1]) != NULL) {
                 found_count++;
