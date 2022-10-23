@@ -88,33 +88,6 @@ void CheckRecursive(char *search, int number[], int len) {
     Check(search, number, 0, result, len);
 }
 
-/// A proper way to search for a match
-/// @param search A name in contacts to search for (case-sensitive!)
-/// @param query Numbers from keypad (can only be numbers)
-void CheckNormal(char *search, char *query) {
-    found = -1;
-    /// We check by converting the search string into a sequence of numbers
-    /// and then checking if the query string is a substring of the search string
-
-    int len = (int) strlen(search);
-    char numbers[len + 1];
-    
-    /// Convert search into a sequence of numbers
-    for (int i = 0; i < len; i++) {
-        for (int j = 0; j < 10; j++) {
-            if (strchr(KB[j], search[i]) != NULL) {
-                numbers[i] = j + '0';
-                break;
-            }
-        }
-    }
-    
-    /// Compare query to the sequence of numbers
-    if (strstr(numbers, query) != NULL) {
-        found = 0;
-    }
-}
-
 /// Entry point
 int main(int argc, char **argv) {
     /// Buffers
@@ -153,16 +126,15 @@ int main(int argc, char **argv) {
             strcpy(l_name, t_name);
             ToLower((unsigned char *)l_name);
 
-//            /// Convert string search argument to int array
-//            int len = (int)strlen(argv[1]);
-//            int number[len];
-//
-//            for (int i = 0; i < len; i++)
-//                number[i] = argv[1][i] - '0';
-//
-//            /// Do the magic
-//            CheckRecursive(l_name, number, len);
-            CheckNormal(l_name, argv[1]);
+            /// Convert string search argument to int array
+            int len = (int)strlen(argv[1]);
+            int number[len];
+
+            for (int i = 0; i < len; i++)
+                number[i] = argv[1][i] - '0';
+
+            /// Do the magic
+            CheckRecursive(l_name, number, len);
             if (found == 0 || strstr(t_num, argv[1]) != NULL) {
                 found_count++;
                 printf("%s, %s\n", t_name, t_num);

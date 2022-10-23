@@ -62,7 +62,7 @@ void CheckNormal(char *search, char *query) {
     /// Convert search into a sequence of numbers
     for (int i = 0; i < len; i++) {
         for (int j = 0; j < 10; j++) {
-            /// Check if there is any symbols in the search and replace them with space
+            /// Check if there is any odd symbols in the search and replace them with space
             if (strchr(" .,:;!?-*&^%$#@()+=_{}[]'\"<>/|\\", search[i]) != NULL) {
                 numbers[i] = ' ';
                 break;
