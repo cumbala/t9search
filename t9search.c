@@ -61,7 +61,7 @@ void CheckNormal(char *search, char *query) {
     for (int i = 0; i < len; i++) {
         for (int j = 0; j < 10; j++) {
             /// Check if there is any odd symbols in the search and replace them with space
-            if (strchr(" .,:;!?-*&^%$#@()+=_{}[]'\"<>/|\\", search[i]) != NULL) {
+            if (strchr(" .,:;!?-*&^%$#@()=_{}[]'\"<>/|\\", search[i]) != NULL) {
                 numbers[i] = ' ';
                 break;
             }
@@ -79,6 +79,17 @@ void CheckNormal(char *search, char *query) {
     }
 }
 
+void CheckNumber(char *number, char *query) {
+    /// here found = -1 
+    /// replace + in number
+    char t_num[(int)strlen(number) + 1];
+    strcpy(t_num, number);
+    t_num[strcspn(t_num, "+")] = '0';
+    if (strstr(t_num, query) != NULL) {
+        found = 0;
+    }
+}
+
 /// Entry point
 int main(int argc, char **argv) {
     /// Buffers
@@ -86,6 +97,22 @@ int main(int argc, char **argv) {
 
     /// Counter for "not found" message
     int found_count = 0;
+
+    /// Check if the argv[1] is a number
+    /// if not - print error to STDERR
+    if (argc > 1)
+        for (int i = 0; i < (int)strlen(argv[1]); i++) {
+            if (argv[1][i] < '0' || argv[1][i] > '9') {
+                fprintf(stderr, "Error: Invalid query input\n");
+                return 1;
+            }
+        }
+
+    /// Check if there other arguments in argv and exit if there are
+    if (argc > 2) {
+        fprintf(stderr, "Error: Too many arguments\n");
+        return 1;
+    }
     
     /// Read name in t_name unless newline or EOF
     while (fgets(t_name, sizeof(t_name), stdin) != NULL) {
@@ -95,18 +122,6 @@ int main(int argc, char **argv) {
         /// Clean up line end characters
         t_name[strcspn(t_name, "\r\n")] = 0;
         t_num[strcspn(t_num, "\r\n")] = 0;
-
-        /// Check if t_num is actually a number after cleaning
-        /// line breaks from it
-        /// If it's not a number - skip this contact\n
-        ///
-        /// For now, we will only allow
-        /// any ASCII character in the name...
-        for (int i = 0; i < (int)strlen(t_num); i++) {
-            if (t_num[i] < '0' || t_num[i] > '9') {
-                continue;
-            }
-        }
 
         if (argc == 1) {
             /// No args - print the formatted contact
@@ -118,7 +133,8 @@ int main(int argc, char **argv) {
             ToLower((unsigned char *)l_name);
             
             CheckNormal(l_name, argv[1]);
-            if (found == 0 || strstr(t_num, argv[1]) != NULL) {
+            CheckNumber(t_num, argv[1]);
+            if (found == 0) {
                 found_count++;
                 printf("%s, %s\n", t_name, t_num);
             }
