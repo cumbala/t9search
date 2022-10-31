@@ -8,8 +8,8 @@ Implementation of T9 contacts search algorithm for IZP course
 3) `make` 
 
 ## Running
-- `./t9search < telbook.txt` - will output every contact in `seznam.txt` in formatted form
-- `./t9search 264 < telbook.txt` - will perform search over `seznam.txt` with the given query
+- `./t9search < telbook.txt` - will output every contact in `telbook.txt` in formatted form
+- `./t9search 264 < telbook.txt` - will perform search over `telbook.txt` with the given query
   
   Output:
   ```bash
