@@ -1,10 +1,12 @@
 /// @code
 /// t9search_levenshtein.c
 ///
-/// Author: Konstantin Romanets, xroman18@stud.fit.vut.cz
-/// Date:   10.10.2022
-/// Desc:   Implementation of T9 contacts search algorithm for IZP course
-///         without recursion with Levenshtein distance fuzzy search
+/// Author:     Konstantin Romanets, xroman18@stud.fit.vut.cz
+/// Date:       10.10.2022
+/// Desc:       Implementation of T9 contacts search algorithm for IZP course
+///             without recursion with Levenshtein distance fuzzy search
+///
+/// Disclamer:  Not working yet
 ///
 /// VUT FIT 2022
 /// @endcode
@@ -118,6 +120,7 @@ void CheckNormal(char *search, char *query) {
     }
     
     /// Compare query to the sequence of numbers
+    /// TODO: Needs fixing here
     if (strstr(numbers, query) != NULL || (levenshtein != -1 && LevenshteinDistance(numbers, query) <= levenshtein)) {
         found = 0;
     }
